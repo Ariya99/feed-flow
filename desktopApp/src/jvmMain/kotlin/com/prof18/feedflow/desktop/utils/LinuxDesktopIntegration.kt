@@ -71,7 +71,7 @@ private fun writeDesktopEntry(appImagePath: String) {
     // user moved the AppImage) without touching the file on every launch.
     if (!desktopFile.exists() || desktopFile.readText() != contents) {
         desktopFile.writeText(contents)
-        desktopFile.setExecutable(true, false)
+        desktopFile.setExecutable(true, true)
         // GNOME caches its application list; nudge it to pick up the new entry
         // sooner so the icon/name show without waiting for a shell reload.
         updateDesktopDatabase(applicationsDir)
