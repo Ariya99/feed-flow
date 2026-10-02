@@ -291,8 +291,12 @@ class DatabaseHelper(
 
             // One update per source instead of one per item: the timestamp is identical for all
             // of them, and this transaction is on the path that gets killed for running long.
-            for (feedSourceId in feedItems.mapTo(mutableSetOf()) { it.feedSource.id }) {
-                dbRef.feedSourceQueries.updateLastSyncTimestamp(lastSyncTimestamp, feedSourceId)
+            val sourceIds = feedItems.mapTo(mutableSetOf()) { it.feedSource.id }
+            if (sourceIds.isNotEmpty()) {
+                dbRef.feedSourceQueries.updateLastSyncTimestamps(
+                    lastSyncTimestamp = lastSyncTimestamp,
+                    urlHashes = sourceIds,
+                )
             }
         }
 
@@ -692,10 +696,10 @@ class DatabaseHelper(
 
     suspend fun updateLastSyncTimestamps(feedSourceIds: List<String>, lastSyncTimestamp: Long) =
         dbRef.transactionWithContext(backgroundDispatcher) {
-            for (feedSourceId in feedSourceIds) {
-                dbRef.feedSourceQueries.updateLastSyncTimestamp(
-                    lastSyncTimestamp,
-                    feedSourceId,
+            if (feedSourceIds.isNotEmpty()) {
+                dbRef.feedSourceQueries.updateLastSyncTimestamps(
+                    lastSyncTimestamp = lastSyncTimestamp,
+                    urlHashes = feedSourceIds,
                 )
             }
         }
