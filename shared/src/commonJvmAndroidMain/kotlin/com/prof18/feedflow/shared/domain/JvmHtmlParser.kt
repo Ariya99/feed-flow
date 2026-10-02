@@ -28,20 +28,13 @@ internal class JvmHtmlParser(
 
     override fun getRssUrl(html: String): String? {
         val doc = Jsoup.parse(html)
-        val queries = listOf(
-            "link[type='application/rss+xml']",
-            "link[type='application/atom+xml']",
-            "link[type='application/json']",
-            "link[type='application/feed+json']",
+        val rssElement = doc.selectFirst(
+            "link[type='application/rss+xml'], " +
+                "link[type='application/atom+xml'], " +
+                "link[type='application/json'], " +
+                "link[type='application/feed+json']",
         )
-        for (query in queries) {
-            val rssElement = doc.select(query).firstOrNull()
-            val rssUrl = rssElement?.attr("href")
-            if (rssUrl != null) {
-                return rssUrl
-            }
-        }
-        return null
+        return rssElement?.attr("href")
     }
 
     override fun getCanonicalUrl(html: String): String? {
