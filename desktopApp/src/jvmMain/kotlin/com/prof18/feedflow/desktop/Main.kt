@@ -227,9 +227,8 @@ private fun setupICloudSupport(): Boolean {
     return try {
         System.load(libraryPath)
         true
-    } catch (_: UnsatisfiedLinkError) {
-        System.err.println("Failed to load iCloud library")
-        System.err.println("Failed to load library. Path: $libraryPath")
+    } catch (e: UnsatisfiedLinkError) {
+        Logger.e("Failed to load iCloud library. Path: $libraryPath", e)
         false
     }
 }
