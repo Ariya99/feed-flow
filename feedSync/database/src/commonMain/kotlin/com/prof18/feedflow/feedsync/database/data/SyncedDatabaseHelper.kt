@@ -389,11 +389,11 @@ class SyncedDatabaseHelper(
 
     suspend fun deleteFeedItems(feedItemIds: List<FeedItemId>) {
         withDatabase { database ->
-            database.transaction {
-                feedItemIds.forEach { feedItemId ->
-                    database.syncedFeedItemQueries.deleteSyncedFeedItem(feedItemId.id)
+            if (feedItemIds.isNotEmpty()) {
+                database.transaction {
+                    database.syncedFeedItemQueries.deleteSyncedFeedItems(feedItemIds.map { it.id })
+                    database.updateMetadata(SyncTable.SYNCED_FEED_ITEM)
                 }
-                database.updateMetadata(SyncTable.SYNCED_FEED_ITEM)
             }
         }
     }

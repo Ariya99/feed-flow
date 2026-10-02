@@ -1,0 +1,17 @@
+--- feedSync/database/src/commonMain/kotlin/com/prof18/feedflow/feedsync/database/data/SyncedDatabaseHelper.kt
++++ feedSync/database/src/commonMain/kotlin/com/prof18/feedflow/feedsync/database/data/SyncedDatabaseHelper.kt
+@@ -389,9 +389,11 @@
+
+     suspend fun deleteFeedItems(feedItemIds: List<FeedItemId>) {
+         withDatabase { database ->
+-            database.transaction {
+-                database.syncedFeedItemQueries.deleteSyncedFeedItems(feedItemIds.map { it.id })
+-                database.updateMetadata(SyncTable.SYNCED_FEED_ITEM)
++            if (feedItemIds.isNotEmpty()) {
++                database.transaction {
++                    database.syncedFeedItemQueries.deleteSyncedFeedItems(feedItemIds.map { it.id })
++                    database.updateMetadata(SyncTable.SYNCED_FEED_ITEM)
++                }
+             }
+         }
+     }
