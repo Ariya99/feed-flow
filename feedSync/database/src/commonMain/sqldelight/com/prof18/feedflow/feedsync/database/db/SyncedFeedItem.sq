@@ -32,3 +32,11 @@ SELECT * FROM synced_feed_item;
 
 deleteAll:
 DELETE FROM synced_feed_item;
+
+updateIsReadWithIds:
+UPDATE synced_feed_item
+SET is_read = :isRead
+WHERE url_hash IN :urlHashes;
+
+deleteSyncedFeedItems:
+DELETE FROM synced_feed_item WHERE url_hash IN :urlHashes;

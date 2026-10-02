@@ -326,18 +326,19 @@ class SyncedDatabaseHelper(
     }
 
     suspend fun updateFeedItemsReadStatus(feedItemIds: List<FeedItemId>, isRead: Boolean) {
+        if (feedItemIds.isEmpty()) return
         withDatabase { database ->
             database.transaction {
-                feedItemIds.forEach { feedItemId ->
+                val hashes = feedItemIds.map { it.id }
+                hashes.forEach { hash ->
                     database.syncedFeedItemQueries.insertOrIgnoreSyncedFeedItem(
-                        url_hash = feedItemId.id,
+                        url_hash = hash,
                         is_read = false,
                         is_bookmarked = false,
                     )
-                    database.syncedFeedItemQueries.updateIsRead(
-                        isRead = isRead,
-                        urlHash = feedItemId.id,
-                    )
+                }
+                hashes.chunked(900).forEach { chunk ->
+                    database.syncedFeedItemQueries.updateIsReadWithIds(isRead = isRead, urlHashes = chunk)
                 }
                 database.updateMetadata(SyncTable.SYNCED_FEED_ITEM)
             }
@@ -388,10 +389,11 @@ class SyncedDatabaseHelper(
     }
 
     suspend fun deleteFeedItems(feedItemIds: List<FeedItemId>) {
+        if (feedItemIds.isEmpty()) return
         withDatabase { database ->
             database.transaction {
-                feedItemIds.forEach { feedItemId ->
-                    database.syncedFeedItemQueries.deleteSyncedFeedItem(feedItemId.id)
+                feedItemIds.map { it.id }.chunked(900).forEach { chunk ->
+                    database.syncedFeedItemQueries.deleteSyncedFeedItems(chunk)
                 }
                 database.updateMetadata(SyncTable.SYNCED_FEED_ITEM)
             }
