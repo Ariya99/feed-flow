@@ -27,6 +27,9 @@ WHERE url_hash = :urlHash;
 deleteSyncedFeedItem:
 DELETE FROM synced_feed_item WHERE url_hash = ?;
 
+deleteSyncedFeedItems:
+DELETE FROM synced_feed_item WHERE url_hash IN :urlHashes;
+
 selectAllSyncedFeedItems:
 SELECT * FROM synced_feed_item;
 
