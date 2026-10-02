@@ -56,6 +56,16 @@ fun getReaderModeStyledHtml(
             $processedContent
         </div>
     </div>
+    ${getReaderModeScript()}
+    </body>
+    </html>
+        """
+        .trimIndent()
+}
+
+private fun getReaderModeScript(): String {
+    // language=javascript
+    return """
     <script>
         // Instagram sends JSON MEASURE messages as its media and caption finish loading.
         window.addEventListener("message", function(event) {
@@ -187,11 +197,9 @@ fun getReaderModeStyledHtml(
           });
         });
     </script>
-    </body>
-    </html>
-        """
-        .trimIndent()
+    """.trimIndent()
 }
+
 
 private fun String.escapeHtml(): String =
     replace("&", "&amp;")
