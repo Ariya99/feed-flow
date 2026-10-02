@@ -33,6 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import androidx.core.view.WindowCompat
+import co.touchlab.kermit.Logger
 import coil3.compose.AsyncImage
 import coil3.imageLoader
 import coil3.request.ImageRequest
@@ -181,7 +182,7 @@ private suspend fun shareImage(context: Context, imageUrl: String) {
                 context.startActivity(Intent.createChooser(shareIntent, null))
             }
         } catch (e: Exception) {
-            e.printStackTrace()
+            Logger.e(e) { "Error while sharing image" }
         }
     }
 }
