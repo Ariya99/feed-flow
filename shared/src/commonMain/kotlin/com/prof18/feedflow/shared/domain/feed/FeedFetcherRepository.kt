@@ -40,6 +40,7 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import kotlin.time.Clock
+import kotlinx.coroutines.flow.mapNotNull
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
@@ -318,6 +319,7 @@ class FeedFetcherRepository internal constructor(
         )
 
         feedSourceUrls
+            .asFlow()
             .mapNotNull { feedSource ->
                 val shouldRefresh = shouldRefreshFeed(
                     feedSource = feedSource,
@@ -334,7 +336,6 @@ class FeedFetcherRepository internal constructor(
                     null
                 }
             }
-            .asFlow()
             .flatMapMerge(concurrency = getNumberOfConcurrentParsingRequests()) { feedSource ->
                 suspend {
                     logger.d { "-> Getting ${feedSource.url}" }
